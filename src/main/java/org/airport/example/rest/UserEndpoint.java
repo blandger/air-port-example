@@ -2,6 +2,8 @@ package org.airport.example.rest;
 
 import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
@@ -10,9 +12,9 @@ import jakarta.ws.rs.core.SecurityContext;
 import lombok.extern.slf4j.Slf4j;
 import org.airport.example.provider.TokenService;
 import org.airport.example.rest.model.UserLogin;
+import org.airport.example.rest.model.UserRegistrationRequest;
 import org.airport.example.service.UserService;
 
-import javax.validation.Valid;
 import java.security.Principal;
 
 @Slf4j
@@ -44,7 +46,9 @@ public class UserEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @PermitAll
-    public Response register() {
+    public Response register(@NotNull @Valid UserRegistrationRequest registrationRequest) {
+//        log.debug("Registration : {}", registrationRequest);
+        System.out.println("Registration : " + registrationRequest);
         return Response.ok("OK").build();
     }
 
@@ -53,8 +57,9 @@ public class UserEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @PermitAll
-    public Response login(@Valid UserLogin userLogin) {
-        log.debug("Login : {}", userLogin);
+    public Response login(@NotNull @Valid UserLogin userLogin) {
+//        log.debug("Login : {}", userLogin);
+        System.out.println("Login : " + userLogin);
         String response;
         try {
             response = tokenService.generateJWT(true, userLogin.getEmail(), "user");

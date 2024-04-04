@@ -1,10 +1,9 @@
 package org.airport.example.rest.model;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
-
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 /**
  * Request model is used for User Login.
@@ -14,11 +13,11 @@ public class UserLogin {
     /**
      * User's email
      */
-    @NotNull @Email
+    @Size(max = 60, min = 5) @Email
     private String email;
     /**
      * User's password
      */
-    @NotEmpty
+    @NotEmpty @Size(max = 45, min = 8)
     private String password;
 }

@@ -3,6 +3,8 @@ package org.airport.example.rest;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
@@ -12,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.airport.example.rest.model.AirPortCreateRequest;
 import org.airport.example.service.AirPortService;
 
-import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 
@@ -29,9 +30,8 @@ public class AirPortEndpoint {
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-//    @RolesAllowed({})
-    @RolesAllowed({"user"})
-//    @PermitAll
+//    @RolesAllowed({"user"})
+    @PermitAll
     public Response getAll(@Context SecurityContext securityContext) {
         Principal principal = securityContext.getUserPrincipal();
         String caller = principal == null ? "anonymous" : principal.getName();
@@ -57,11 +57,10 @@ public class AirPortEndpoint {
     @Path("/create")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-//    @RolesAllowed({})
     @RolesAllowed({"user"})
     public Response create(
             @Context SecurityContext securityContext,
-            @Valid AirPortCreateRequest createRequest) {
+            @NotNull @Valid AirPortCreateRequest createRequest) {
         log.debug("Create AirPort = {}", createRequest);
         Principal principal = securityContext.getUserPrincipal();
         String caller = principal == null ? "anonymous" : principal.getName();
