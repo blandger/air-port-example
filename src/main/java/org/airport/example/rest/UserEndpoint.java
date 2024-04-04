@@ -8,8 +8,11 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 import lombok.extern.slf4j.Slf4j;
+import org.airport.example.provider.TokenService;
+import org.airport.example.rest.model.UserLogin;
 import org.airport.example.service.UserService;
 
+import javax.validation.Valid;
 import java.security.Principal;
 
 @Slf4j
@@ -18,6 +21,8 @@ public class UserEndpoint {
 
     @Inject
     private UserService service;
+    @Inject
+    private TokenService tokenService;
 
     @GET
     @Path("/me/{name}")
@@ -48,7 +53,16 @@ public class UserEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @PermitAll
-    public Response login() {
-        return Response.ok("OK").build();
+    public Response login(@Valid UserLogin userLogin) {
+        log.debug("Login : {}", userLogin);
+        String response;
+        try {
+            response = tokenService.generateJWT(true, userLogin.getEmail(), "user");
+            System.out.println("Login JWT = " + response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(403).encoding("Not Authorised, user is unknown").build();
+        }
+        return Response.ok(response).build();
     }
 }
