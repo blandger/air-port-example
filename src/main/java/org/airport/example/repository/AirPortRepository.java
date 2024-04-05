@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 import org.airport.example.repository.entity.AirPortEntity;
 
 import java.util.List;
@@ -41,9 +42,20 @@ public class AirPortRepository {
      * Store new airport record
      * @param airPort entity to be stored
      */
-    public void createAirPort(AirPortEntity airPort) {
+    @Transactional
+    public void create(AirPortEntity airPort) {
         Objects.requireNonNull(airPort, "airPort is NULL");
         em.persist(airPort);
+    }
+
+    /**
+     * Update existing airport record
+     * @param airPort entity to be updated
+     */
+    @Transactional
+    public void update(AirPortEntity airPort) {
+        Objects.requireNonNull(airPort, "airPort is NULL");
+        em.merge(airPort);
     }
 
     /**

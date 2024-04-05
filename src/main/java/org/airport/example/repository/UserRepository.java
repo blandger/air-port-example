@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 import org.airport.example.repository.entity.UserEntity;
 
 import java.util.Objects;
@@ -32,6 +33,7 @@ public class UserRepository {
      * Create new user record
      * @param user user's data
      */
+    @Transactional
     public void createUser(UserEntity user) {
         Objects.requireNonNull(user, "user is NULL");
         em.persist(user);

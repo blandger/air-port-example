@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
         DEFAULT (current_timestamp AT TIME ZONE 'UTC')
 );
 
-CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS users_unique_email_idx on users (email);
+CREATE UNIQUE INDEX IF NOT EXISTS users_unique_email_idx on users (email);
 
 
 CREATE TABLE IF NOT EXISTS airports (
@@ -29,6 +29,6 @@ alter table airports add constraint fk_users_airports_id
     foreign key (user_id)
         REFERENCES users (id);
 
-CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS airports_unique_code_idx on airports (code);
+CREATE UNIQUE INDEX IF NOT EXISTS airports_unique_code_idx on airports (code);
 
-CREATE INDEX CONCURRENTLY IF NOT EXISTS airports_name_idx on airports (name);
+CREATE INDEX IF NOT EXISTS airports_name_idx on airports (name);
