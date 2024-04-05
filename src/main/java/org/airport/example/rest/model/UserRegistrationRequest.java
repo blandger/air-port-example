@@ -1,9 +1,6 @@
 package org.airport.example.rest.model;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 /**
@@ -14,16 +11,16 @@ public class UserRegistrationRequest {
     /**
      * User's full name
      */
-    @NotNull @Size(max = 25, min = 5)
-    private String fullName;
+    @NotNull @NotEmpty @Size(max = 250, min = 5) @Pattern(regexp = "[A-Za-z0-9 ]*", message = "must contain only letters, digits and spaces (no special symbols)")
+    private String username;
     /**
      * User's email, unique
      */
-    @Size(max = 60, min = 5) @Email
+    @NotNull @NotEmpty @Size(max = 60, min = 5) @Email
     private String email;
     /**
      * Registration password
      */
-    @NotEmpty @Size(max =45, min = 8)
+    @NotEmpty @NotEmpty @Size(max = 45, min = 8)
     private String password;
 }

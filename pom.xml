@@ -27,14 +27,17 @@
         <version.failsafe.plugin>3.2.5</version.failsafe.plugin>
         <version.war.plugin>3.4.0</version.war.plugin>
 
-        <!-- librariess -->
+        <!-- libraries -->
         <lombok.version>1.18.32</lombok.version>
         <slf4j.version>1.7.30</slf4j.version>
         <jakarta-validation.version>3.0.2</jakarta-validation.version>
         <hibernate-validation.version>8.0.1.Final</hibernate-validation.version>
-        <version.com.nimbusds.jose-jwt>9.37.3</version.com.nimbusds.jose-jwt>
+        <com.nimbusds.jose-jwt.version>9.37.3</com.nimbusds.jose-jwt.version>
         <jakarta.json-api.version>2.1.3</jakarta.json-api.version>
-        <version.postgresql>42.7.0</version.postgresql>
+        <postgresql.version>42.7.3</postgresql.version>
+        <bcrypt.version>0.10.2</bcrypt.version>
+        <hibernate.core.version>5.6.15.Final</hibernate.core.version>
+        <persistence.api.version>3.1.0</persistence.api.version>
 
         <!-- maven-compiler-plugin -->
         <maven.compiler.release>11</maven.compiler.release>
@@ -42,6 +45,15 @@
 
     <!-- the JBoss community and Red Hat GA Maven repositories -->
     <repositories>
+        <repository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
         <repository>
             <releases>
                 <updatePolicy>never</updatePolicy>
@@ -109,7 +121,7 @@
             <dependency>
                 <groupId>com.nimbusds</groupId>
                 <artifactId>nimbus-jose-jwt</artifactId>
-                <version>${version.com.nimbusds.jose-jwt}</version>
+                <version>${com.nimbusds.jose-jwt.version}</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.json</groupId>
@@ -125,7 +137,22 @@
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>${version.postgresql}</version>
+                <version>${postgresql.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>at.favre.lib</groupId>
+                <artifactId>bcrypt</artifactId>
+                <version>${bcrypt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core-jakarta</artifactId>
+                <version>${hibernate.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.persistence</groupId>
+                <artifactId>jakarta.persistence-api</artifactId>
+                <version>${persistence.api.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -183,7 +210,18 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>at.favre.lib</groupId>
+            <artifactId>bcrypt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core-jakarta</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+        </dependency>
         <!-- Test scope dependencies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

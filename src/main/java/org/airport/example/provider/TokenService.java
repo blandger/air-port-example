@@ -24,7 +24,7 @@ import jakarta.json.JsonObjectBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Component is used for loading PUB/PRIV keys that are used fpr JWT token
+ * Component is used for loading PUBLIC/PRIVATE keys that are used fpr JWT token
  * generation and check.
  */
 @ApplicationScoped
@@ -37,6 +37,7 @@ public class TokenService {
     public static int TOKEN_LIFE_TIME = 14400;
     /**
      * Path to key file inside WAR archive
+     * TODO!: that is security issue indeed !! We should NEVER store private key in code
      */
     public static String WAR_FILE_DIR_PRIVATE_KEY = "/META-INF/private.pem";
     /**
@@ -149,7 +150,7 @@ public class TokenService {
 
     public static void main(String[] args) throws Exception {
         if (args.length < 1)
-            throw new IllegalArgumentException("Usage TokenUtil {principal} {groups}");
+            throw new IllegalArgumentException("Usage TokenService {principal} {groups}");
         String principal = args[0];
         TokenService tokenService = new TokenService();
 
