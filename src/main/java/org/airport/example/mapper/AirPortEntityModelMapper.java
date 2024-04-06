@@ -2,6 +2,7 @@ package org.airport.example.mapper;
 
 import org.airport.example.model.AirPortModel;
 import org.airport.example.repository.entity.AirPortEntity;
+import org.airport.example.rest.request.AirPortCreateRequest;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 
@@ -15,4 +16,5 @@ public interface AirPortEntityModelMapper {
     AirPortModel toModel(AirPortEntity entity);
     List<AirPortModel> toModelList(List<AirPortEntity> entityList);
     AirPortEntity toEntity(AirPortModel model);
+    AirPortModel requestToModel(AirPortCreateRequest createRequest);
 }

@@ -73,10 +73,10 @@ public class UserEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @RolesAllowed({"user"})
-    public Response login(@Context SecurityContext securityContext) {
+    public Response logout(@Context SecurityContext securityContext) {
         Principal principal = securityContext.getUserPrincipal();
         String tokenEmail = principal == null ? "anonymous" : principal.getName();
-        // method is NOT IMPLEMENTED due to lack of requirements
+        // method is NOT IMPLEMENTED due to lack of clear requirements
 
         // One of custom scenarios can be following:
         // - take current date-time and update user's record on logout

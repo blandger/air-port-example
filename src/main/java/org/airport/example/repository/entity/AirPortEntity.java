@@ -1,9 +1,6 @@
 package org.airport.example.repository.entity;
 
 import jakarta.persistence.*;
-//import jakarta.validation.constraints.NotEmpty;
-//import jakarta.validation.constraints.NotNull;
-//import jakarta.validation.constraints.Size;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,19 +24,19 @@ public class AirPortEntity implements Serializable {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @NotNull @NotEmpty @Size(max = 250, min = 5)
+    /**
+     * Airport name
+     */
     @Column(nullable = false)
     private String name;
     /**
      * Airport code, unique
      */
-//    @NotNull @NotEmpty @Size(max = 25, min = 3)
     @Column(unique = true, nullable = false)
     private String code;
     /**
      * Airport city name, not unique
      */
-//    @NotNull @NotEmpty @Size(max = 250, min = 5)
     @Column(nullable = false)
     private String city;
 

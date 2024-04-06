@@ -43,7 +43,7 @@ public class AirPortRepository {
      * @param airPort entity to be stored
      */
     @Transactional
-    public void create(AirPortEntity airPort) {
+    public void createAirPort(AirPortEntity airPort) {
         Objects.requireNonNull(airPort, "airPort is NULL");
         em.persist(airPort);
     }
@@ -56,6 +56,25 @@ public class AirPortRepository {
     public void update(AirPortEntity airPort) {
         Objects.requireNonNull(airPort, "airPort is NULL");
         em.merge(airPort);
+    }
+
+    @Transactional
+    public void delete(AirPortEntity airPortEntity) {
+        Objects.requireNonNull(airPortEntity, "airport entity is NULL");
+        Objects.requireNonNull(airPortEntity.getId(), "airport ID is NULL");
+        em.remove(airPortEntity);
+    }
+
+    /**
+     * Find airport by airPort name
+     * @param airPortName airPort name or partial name
+     * @return list of found records
+     */
+    public List findByName(String airPortName) {
+        Objects.requireNonNull(airPortName, "airPort Name is NULL");
+        Query query = em.createQuery("select port from AirPortEntity port where port.name like '%:airPortName%'", AirPortEntity.class);
+        query.setParameter("airPortName", airPortName);
+        return query.getResultList();
     }
 
     /**
@@ -75,7 +94,7 @@ public class AirPortRepository {
     }
 
     /**
-     * Find aiport by city name
+     * Find airport by city name
      * @param city city name or partial name
      * @return list of found records
      */
