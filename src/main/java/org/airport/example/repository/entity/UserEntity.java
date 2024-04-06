@@ -1,13 +1,10 @@
 package org.airport.example.repository.entity;
 
 import jakarta.persistence.*;
-//import jakarta.validation.constraints.Email;
-//import jakarta.validation.constraints.NotEmpty;
-//import jakarta.validation.constraints.NotNull;
-//import jakarta.validation.constraints.Size;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -21,20 +18,19 @@ import java.util.Date;
 @Getter
 @Setter
 @EqualsAndHashCode
+@ToString
 public class UserEntity implements Serializable {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @NotNull @NotEmpty @Size(max = 250, min = 5)
     @Column(nullable = false)
-    private String userName;
+    private String username;
 
-//    @NotNull @NotEmpty @Size(max = 60, min = 5) @Email
     @Column(unique = true, nullable = false)
     private String email;
 
-//    @NotEmpty @NotEmpty @Size(max = 45, min = 8)
+    @ToString.Exclude
     @Column(nullable = false)
     private String password;
 

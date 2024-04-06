@@ -11,7 +11,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 import lombok.extern.slf4j.Slf4j;
-import org.airport.example.rest.model.AirPortCreateRequest;
+import org.airport.example.rest.request.AirPortCreateRequest;
 import org.airport.example.service.AirPortService;
 
 import java.security.Principal;
@@ -19,11 +19,16 @@ import java.util.List;
 
 /**
  * Controller/EndPoint is used for User management and JWT token operations.
+ * - create new AirPort only by authorized user (with jwt token)
+ * - update AirPort data by authorized user
+ * - delete AirPort data by authorized user
+ * - get all airports list (by anyone)
+ * - find by name (by anyone)
+ * - find by code (by anyone)
  */
 @Path("/airports")
 @Slf4j
 public class AirPortEndpoint {
-
     @Inject
     private AirPortService service;
 

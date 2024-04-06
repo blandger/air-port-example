@@ -14,9 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 public class ValidationExceptionMapper implements ExceptionMapper<ValidationException> {
     @Override
     public Response toResponse(ValidationException exception) {
-        //
         String error_message = exception.toString();
         log.error("Validation Error {}", error_message);
-        return Response.ok(error_message).build();
+        return Response.status(Response.Status.BAD_REQUEST).entity(error_message).build();
     }
 }

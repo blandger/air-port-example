@@ -21,6 +21,7 @@ import java.util.Date;
 @Getter
 @Setter
 @EqualsAndHashCode
+@ToString
 public class AirPortEntity implements Serializable {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

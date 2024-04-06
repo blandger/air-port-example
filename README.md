@@ -211,18 +211,21 @@ The connection failed: Connection refused -> [Help 1]
 
 ## Testing REST API
 
-Deployed application API is accessible by URL: http://127.0.0.1:8080/airport-example/
+Deployed application API is accessible by URL: http://127.0.0.1:8080/airport-example
 
 EndPoints are:
 
 POST
-users/register
-{"username":"user family name FIFO","email":"ermfn@gmail.com","password":"jwt#$%ge"}
+/users/register
+{"username":"user family name FIFO","email":"test_user_01@gmail.com","password":"jwt#$%ge"}
 
 POST
-users/login
+/users/login
 {"email":"admin@gmail.com","password":"Dfks$5d*Q"}
 
+POST
+/users/logout
+Header = Authorization: Bearer eyJraWQiOi......
 
 GET
-airports/
+/airports

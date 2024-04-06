@@ -1,4 +1,4 @@
-package org.airport.example.provider;
+package org.airport.example.service;
 
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.RSASSASigner;

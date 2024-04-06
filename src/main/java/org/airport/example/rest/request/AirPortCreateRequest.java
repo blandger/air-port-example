@@ -1,4 +1,4 @@
-package org.airport.example.rest.model;
+package org.airport.example.rest.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
