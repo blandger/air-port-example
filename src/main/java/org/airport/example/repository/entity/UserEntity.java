@@ -8,6 +8,7 @@ import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 /**
  * Entity for 'users' table
@@ -36,4 +37,7 @@ public class UserEntity implements Serializable {
 
     @Column(name = "CREATED", nullable = false, updatable = false, insertable = false)
     private Date created;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private Set<AirPortEntity> owners;
 }

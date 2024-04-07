@@ -13,7 +13,6 @@ import java.util.Date;
  * Entity for 'airports' table.
  */
 @Entity
-//@Table(name = "airports", uniqueConstraints = @UniqueConstraint(columnNames = "id"))
 @Table(name = "airports", uniqueConstraints = {@UniqueConstraint(columnNames = "id"), @UniqueConstraint(columnNames = "code")})
 @Getter
 @Setter
@@ -27,19 +26,18 @@ public class AirPortEntity implements Serializable {
     /**
      * Airport name
      */
-    @Column(nullable = false)
     private String name;
     /**
      * Airport code, unique
      */
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
     private String code;
     /**
      * Airport city name, not unique
      */
-    @Column(nullable = false)
     private String city;
 
+//    @EqualsAndHashCode.Exclude
     @ToString.Exclude @EqualsAndHashCode.Exclude
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID", referencedColumnName = "ID", nullable = false)

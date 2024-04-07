@@ -20,6 +20,10 @@ import org.airport.example.service.UserService;
 
 import java.security.Principal;
 
+/**
+ * EndPoint controller is used for User management and JWT token operations.
+ * Include operations: Register, Login
+ */
 @Slf4j
 @Path("/users")
 public class UserEndpoint {
@@ -28,46 +32,62 @@ public class UserEndpoint {
     @Inject
     private UserEntityModelMapper userMapper;
 
+    /**
+     * User registration logic, checks request data, stores user to db.
+     * @param registrationRequest user's data
+     * @return created user model or error
+     */
     @POST
     @Path("/register")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @PermitAll
     public Response register(@NotNull @Valid UserRegistrationRequest registrationRequest) {
-//        log.debug("Registration : {}", registrationRequest);
-        System.out.println("Registration : " + registrationRequest);
+        log.debug("Registration : {}", registrationRequest);
+//        System.out.println("Registration : " + registrationRequest);
         UserModel model;
         try {
             model = userService.register(userMapper.requestToModel(registrationRequest));
         } catch (RuntimeException e) {
-            log.error("User registration error", e);
+//            log.error("User registration error", e);
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("User registration error: " + e.getMessage()).build();
         }
         var response = userMapper.modelToResponse(model);
-        return Response.ok(response).status(Response.Status.CREATED.getStatusCode()).build();
+        return Response.status(Response.Status.CREATED.getStatusCode()).entity(response).build();
     }
 
+    /**
+     * Makes user login by checking email + password.
+     * @param userLoginRequest user's data
+     * @return JWT or error
+     */
     @POST
     @Path("/login")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @PermitAll
     public Response login(@NotNull @Valid UserLoginRequest userLoginRequest) {
-//        log.debug("Login : {}", userLoginRequest);
-        System.out.println("Login : " + userLoginRequest.getEmail());
+        log.debug("Login : {}", userLoginRequest);
+//        System.out.println("Login : " + userLoginRequest.getEmail());
         var userModel = userMapper.loginRequestToModel(userLoginRequest);
         String jtwToken;
         try {
             jtwToken = userService.login(userModel);
         } catch (UserLoginException e) {
-            log.error("User login error", e);
+//            log.error("User login error", e);
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Login error: " + e.getMessage()).build();
         }
-        return Response.ok(jtwToken).status(Response.Status.OK.getStatusCode()).build();
+        return Response.status(Response.Status.OK.getStatusCode()).entity(jtwToken).build();
     }
 
+    /**
+     * TODO: NOT IMPLEMENTED due to lack of clear requirements
+     *
+     * @param securityContext is used for getting security principal
+     * @return email
+     */
     @POST
     @Path("/logout")
     @Produces(MediaType.APPLICATION_JSON)
@@ -75,7 +95,7 @@ public class UserEndpoint {
     @RolesAllowed({"user"})
     public Response logout(@Context SecurityContext securityContext) {
         Principal principal = securityContext.getUserPrincipal();
-        String tokenEmail = principal == null ? "anonymous" : principal.getName();
+        String principalEmail = principal == null ? "anonymous" : principal.getName();
         // method is NOT IMPLEMENTED due to lack of clear requirements
 
         // One of custom scenarios can be following:
@@ -85,6 +105,6 @@ public class UserEndpoint {
         // - compare 'token exp' value with 'logout_date_time' value
         // - if 'token exp' < 'logout_date_time' - FORBID access to method
 
-        return Response.ok(tokenEmail).build();
+        return Response.ok(principalEmail).build();
     }
 }

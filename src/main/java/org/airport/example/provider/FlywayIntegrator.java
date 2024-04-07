@@ -18,7 +18,7 @@ import java.sql.SQLException;
 
 /**
  * Component is used on app deploy during app startup to apply database migrations using FlyWay.
- * All SQL scripts applied from folder: src/main/java/resources/database/migration/
+ * All SQL scripts applied from a folder: src/main/java/resources/database/migration/
  */
 @Slf4j
 public class FlywayIntegrator implements Integrator {
@@ -30,18 +30,15 @@ public class FlywayIntegrator implements Integrator {
         log.info("Migrating database to the latest version");
 
         final JdbcServices jdbcServices = serviceRegistry.getService(JdbcServices.class);
-        Connection connection;
         DataSource dataSource = null;
 
-        try {
-            connection = jdbcServices.getBootstrapJdbcConnectionAccess().obtainConnection();
+        try (Connection connection = jdbcServices.getBootstrapJdbcConnectionAccess().obtainConnection()) {
             final Method method = connection != null ? connection.getClass().getMethod("getDataSource", null) : null;
             dataSource = (DataSource) (method != null ? method.invoke(connection, null) : null);
         } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | SQLException e) {
-            log.error("FlyWay get Datasource Error", e);
-            e.printStackTrace();
+            log.error("FlyWay, getting Datasource Error", e);
         }
-        log.info("FlyWay dataSource = " + dataSource);
+        log.debug("FlyWay dataSource, {}", dataSource);
 
         Flyway flyway =
                 Flyway.configure()

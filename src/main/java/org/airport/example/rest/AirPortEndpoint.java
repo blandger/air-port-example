@@ -16,6 +16,7 @@ import org.airport.example.mapper.AirPortEntityModelMapper;
 import org.airport.example.model.AirPortModel;
 import org.airport.example.model.UserModel;
 import org.airport.example.rest.request.AirPortCreateRequest;
+import org.airport.example.rest.respose.AirPortDeleteResponse;
 import org.airport.example.service.AirPortService;
 import org.airport.example.service.UserService;
 
@@ -23,13 +24,12 @@ import java.security.Principal;
 import java.util.List;
 
 /**
- * Controller/EndPoint is used for User management and JWT token operations.
+ * EndPoint controller is used for AirPort management.
  * - create new AirPort only by authorized user (with jwt token)
  * - update AirPort data by authorized user
  * - delete AirPort data by authorized user
  * - get all airports list (by anyone)
- * - find by name (by anyone)
- * - find by code (by anyone)
+ * - find by name (by anyone), code (by anyone) or both params
  */
 @Path("/airports")
 @Slf4j
@@ -41,19 +41,27 @@ public class AirPortEndpoint {
     @Inject
     private UserService userService;
 
+    /**
+     * Create new AirPort instance by authorized user.
+     *
+     * @param securityContext JTW data will be used for identifying User
+     * @param createRequest airport data
+     * @return created instance or error
+     */
     @POST
-    @Path("/create")
+    @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @RolesAllowed({"user"})
     public Response create(
             @Context SecurityContext securityContext,
             @NotNull @Valid AirPortCreateRequest createRequest) {
-//        log.debug("Create AirPort = {}", createRequest);
-        System.out.println("Create AirPort: " + createRequest);
+        log.debug("Create AirPort = {}", createRequest);
+//        System.out.println("Create AirPort: " + createRequest);
         Principal principal = securityContext.getUserPrincipal();
         String jwtTokenPrincipal = principal == null ? "anonymous" : principal.getName();
-        System.out.println("Create AirPort jwtTokenPrincipal = " + jwtTokenPrincipal);
+        log.debug("Create AirPort jwtTokenPrincipal: {}", jwtTokenPrincipal);
+//        System.out.println("Create AirPort jwtTokenPrincipal = " + jwtTokenPrincipal);
 
         AirPortModel airPortModel = airPortMapper.requestToModel(createRequest);
         UserModel foundUser = userService.findByEmail(jwtTokenPrincipal);
@@ -66,39 +74,102 @@ public class AirPortEndpoint {
         try {
             newModel = portService.create(airPortModel, foundUser);
         } catch (RuntimeException e) {
-            log.error("AirPort creation error", e);
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("AirPort creation error: " + e.getMessage()).build();
         }
         return Response.status(Response.Status.CREATED.getStatusCode()).entity(newModel).build();
     }
 
-    @GET
-    @Path("/all")
+    /**
+     * Update AirPort data with new value using known record ID
+     *
+     * @param securityContext JTW data will be used for identifying User
+     * @param id airport Id value
+     * @param createRequest new data for update
+     * @return updated instance or error
+     */
+    @PUT
+    @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    @PermitAll
-    public Response getAll(@Context SecurityContext securityContext) {
+    @Consumes(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"user"})
+    public Response update(
+            @Context SecurityContext securityContext,
+            @NotNull @Valid @PathParam("id") Long id,
+            @NotNull @Valid AirPortCreateRequest createRequest) {
+        log.debug("Update by '{}' AirPort = {}", id, createRequest);
+//        System.out.println("Update AirPort: " + createRequest);
         Principal principal = securityContext.getUserPrincipal();
-        String caller = principal == null ? "anonymous" : principal.getName();
-        System.out.println("caller = " + caller);
+        String jwtTokenPrincipal = principal == null ? "anonymous" : principal.getName();
+        log.trace("Update AirPort jwtTokenPrincipal: {}", jwtTokenPrincipal);
+//        System.out.println("Update AirPort jwtTokenPrincipal = " + jwtTokenPrincipal);
 
-        List<AirPortModel> responseList = portService.getAll();
-//        log.debug("Found AirPorts : [{}]", responseList.size());
-        System.out.println("Found AirPorts : " + responseList.size());
-        return Response.status(Response.Status.OK.getStatusCode()).entity(responseList).build();
+        AirPortModel airPortModel = airPortMapper.requestToModel(createRequest);
+        airPortModel.setId(id);
+        UserModel foundUser = userService.findByEmail(jwtTokenPrincipal);
+        if (foundUser == null) {
+            log.warn("User '{}' not found", jwtTokenPrincipal);
+            throw new AirPortCreateException("Participated user is not known");
+        }
+
+        AirPortModel newModel;
+        try {
+            newModel = portService.update(airPortModel, foundUser);
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("AirPort updating error: " + e.getMessage()).build();
+        }
+        return Response.status(Response.Status.ACCEPTED.getStatusCode()).entity(newModel).build();
     }
 
+    /**
+     * Delete record by authorized user and known airport Id
+     *
+     * @param id airport ID
+     * @return true if deleted successfully, false if record not found, error if something failed
+     */
+    @DELETE
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"user"})
+    public Response delete(
+            @NotNull @Valid @PathParam("id") Long id) {
+        log.debug("Deleting airport by '{}'", id);
+//        System.out.println("Deleting AirPort: " + id);
+        AirPortDeleteResponse deleteResponse = new AirPortDeleteResponse(id, false, null);
+        try {
+            int deleted = portService.delete(id);
+            deleteResponse.setDeleted(deleted > 0);
+        } catch (Exception e) {
+            deleteResponse.setError("AirPort deleting error: " + e.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(deleteResponse).build();
+        }
+        return Response.status(Response.Status.ACCEPTED.getStatusCode()).entity(deleteResponse).build();
+    }
+
+    /**
+     * Search AirPort by using different parameter.
+     * Zero values, first, second or both parameter values can be used.
+     * TODO: PAGINATION should be used here, but that was not required
+     *
+     * @param name is optional
+     * @param code is optional
+     * @return found instances
+     */
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
     @PermitAll
-    public Response getByName(
-            final @QueryParam("name") String name,
-            final @QueryParam("code") String code,
-            final @QueryParam("city") String city) {
-        System.out.println("#S#% Get AirPorts by name : " + name + ", " + code + ", " + city);
-        List<AirPortModel> responseList = portService.getByName(name);
-        log.debug("Found by name '{}': [{}]", name, responseList.size());
+    public Response getByParameters(
+            @QueryParam("name") String name,
+            @QueryParam("code") String code) {
+        log.debug("Get AirPorts by name: '{}', code: '{}'", name, code);
+//        System.out.println("Get AirPorts by name : " + name + ", code = " + code);
+        List<AirPortModel> responseList = portService.getByParameters(name, code);
+//        List<AirPortModel> responseList = portService.getByName(name, code);
+        log.debug("Found airport(s) by name '{}', code '{}' : [{}]", name, code, responseList.size());
         return Response.status(Response.Status.OK.getStatusCode()).entity(responseList).build();
     }
 

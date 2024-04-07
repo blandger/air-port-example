@@ -213,19 +213,56 @@ The connection failed: Connection refused -> [Help 1]
 
 Deployed application API is accessible by URL: http://127.0.0.1:8080/airport-example
 
-EndPoints are:
+All api use - Content-Type: application/json
+
+### User endPoints
 
 POST
 /users/register
+```
 {"username":"user family name FIFO","email":"test_user_01@gmail.com","password":"jwt#$%ge"}
+```
 
 POST
 /users/login
+```
 {"email":"admin@gmail.com","password":"Dfks$5d*Q"}
+```
 
 POST
 /users/logout
 Header = Authorization: Bearer eyJraWQiOi......
 
+### AirPort endpoints
+
+POST
+/airports
+```
+Header = Authorization: Bearer eyJraWQiOi......
+{"name":"New AirPort name","code":"OIWW","city":"New City name"}
+```
+
+PUT
+/airports/{id}
+```
+Header = Authorization: Bearer eyJraWQiOi......
+{"name":"New AirPort 22","code":"YJDEW","city":"New City 22"}
+```
+
+DELETE
+/airports/{id}
+```
+Header = Authorization: Bearer eyJraWQiOi......
+```
+
 GET
 /airports
+
+GET
+/airports?name=Ne
+
+GET
+/airports?code=O
+
+GET
+/airports?name=Ne&code=O
