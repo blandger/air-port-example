@@ -15,6 +15,7 @@ import org.airport.example.repository.entity.UserEntity;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Business logic service for AirPort management
@@ -53,8 +54,7 @@ public class AirPortService {
         } catch (Exception e) {
             throw new AirPortCreateException("Failed AirPort creation", e);
         }
-//        return airPortMapper.toModel(airPortEntity);
-        return airPortMapper.toModel(airPortEntity, new AirPortModel());
+        return airPortMapper.toModel(airPortEntity);
     }
 
     /**
@@ -76,13 +76,12 @@ public class AirPortService {
 
         try {
             portRepository.update(airPortEntity);
-//            log.debug("Updated AirPort: {}", airPortEntity);
-            System.out.println("Updated AirPort: " + airPortEntity);
+            log.debug("Updated AirPort: {}", airPortEntity);
+//            System.out.println("Updated AirPort: " + airPortEntity);
         } catch (Exception e) {
             throw new AirPortCreateException("Failed AirPort update", e);
         }
-//        return airPortMapper.toModel(airPortEntity);
-        return airPortMapper.toModel(airPortEntity, new AirPortModel());
+        return airPortMapper.toModel(airPortEntity);
     }
 
     /**
@@ -118,8 +117,9 @@ public class AirPortService {
      */
     public List<AirPortModel> getByParameters(String airPortName, String code) {
         var airPortEntityList =  portRepository.findByNameOrCode(airPortName, code);
-//        System.out.println("AP list = " + airPortEntityList);
-        List airPortList = airPortMapper.toModelList(airPortEntityList);
+//        System.out.println("Fetched AirPort entity list = " + airPortEntityList);
+        List airPortList = airPortEntityList.stream()
+                .map(item -> airPortMapper.toModel(item)).collect(Collectors.toList());
 //        System.out.println("Found by name: " + airPortName + ", = " + airPortList.size());
         return airPortList;
     }
