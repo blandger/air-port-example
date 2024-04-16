@@ -48,7 +48,7 @@ postgres-1  | 2024-04-04 10:18:24.545 UTC [61] LOG:  database system was shut do
 postgres-1  | 2024-04-04 10:18:24.554 UTC [1] LOG:  database system is ready to accept connections
 ```
 
-### Install PostgreSQL CLI client and create database (IMPORTANT !)
+### Install PostgreSQL CLI client
 Linux: Check how to install PSQL CLI client only by [link](https://www.dewanahmed.com/install-psql/)
 
 Windows: Download 16.2 installation package, install PSQL CLI client only by [link](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads)
@@ -61,9 +61,7 @@ psql (PostgreSQL) 14.11 (Ubuntu 14.11-0ubuntu0.22.04.1)
 ```
 
 Check SQL connection using command:
-psql -l
-
->psql postgres://postgres:example@localhost:5432
+> psql postgres://postgres:example@localhost:5432
 
 Possible output should be like :
 ```
@@ -74,22 +72,27 @@ Type "help" for help.
 
 postgres=#
 ```
+### Create database (IMPORTANT !)
+We'll create a new database (air_port_example) MANUALLY and new schema (air_port_schema) with all tables and initial data will be created AUTOMATICALLY on startup.
 
 Run command in CLI to create new db schema
+> postgres=# SELECT 'CREATE DATABASE air_port_example' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'air_port_example')\gexec
+
+Sometimes more simple form can work too (not always):
 > postgres=# CREATE DATABASE air_port_example;
 
 you can show SQL schema list by command inside SQL server like:
 
-> postgres=#\dn+
+> postgres=#\l
 
 ```
-                                            List of schemas
-       Name       |       Owner       |           Access privileges            |      Description       
-------------------+-------------------+----------------------------------------+------------------------
- air_port_example | postgres          |                                        | 
- public           | pg_database_owner | pg_database_owner=UC/pg_database_owner+| standard public schema
-                  |                   | =U/pg_database_owner                   | 
-(2 rows)
+                                                          List of databases
+       Name       |  Owner   | Encoding | Locale Provider |  Collate   |   Ctype    | ICU Locale | ICU Rules |   Access privileges
+------------------+----------+----------+-----------------+------------+------------+------------+-----------+-----------------------
+ air_port_example | postgres | UTF8     | libc            | en_US.utf8 | en_US.utf8 |            |           |
+ postgres         | postgres | UTF8     | libc            | en_US.utf8 | en_US.utf8 |            |           |
+ template0        | postgres | UTF8     | libc            | en_US.utf8 | en_US.utf8 |            |           | =c/postgres          +
+                  |          |          |                 |            |            |            |           | postgres=CTc/postgres
 ```
 Exit SQL client by:
 
@@ -237,6 +240,7 @@ The connection failed: Connection refused -> [Help 1]
 ```
 
 ## Testing REST API
+You can use a Postman.com account for importing Environment and Collection [placed into folder](/wildfly_config/Postman.com_test_calls_exported)
 
 Deployed application API is accessible by URL: http://127.0.0.1:8080/airport-example
 

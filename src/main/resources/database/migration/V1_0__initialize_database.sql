@@ -1,6 +1,8 @@
 -- DROP SCHEMA IF EXISTS air_port_example;
 
-CREATE SCHEMA IF NOT EXISTS air_port_example AUTHORIZATION postgres;
+CREATE SCHEMA IF NOT EXISTS air_port_schema AUTHORIZATION postgres;
+
+SET SEARCH_PATH TO air_port_schema;
 
 CREATE TABLE IF NOT EXISTS users (
     id              serial primary key,

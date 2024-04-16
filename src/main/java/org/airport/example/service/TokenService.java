@@ -44,6 +44,7 @@ public class TokenService {
      * Signer instance for JWT creation
      */
     private static JWSSigner signer;
+    private final static Object lock = new Object();
 
     /**
      * Try to load private key from resource file and use it for JWT generation
@@ -100,22 +101,24 @@ public class TokenService {
     }
 
     public String generateJWT(boolean isWebApp, final String principal, final String... groups) throws Exception {
-        if (signer == null) {
-            InputStream fullPath;
-            if (isWebApp) {
-                fullPath = getInputFileInWebApp();
-            } else {
-                fullPath = readFileInProgram();
-            }
-//            log.debug("Loading private key for the first time...");
-            System.out.println("Loading private key for the first time...");
-            Optional<PrivateKey> privateKeyOptional = loadPrivateKey(fullPath);
-            if (privateKeyOptional.isPresent()) {
-                signer = new RSASSASigner(privateKeyOptional.get());
-            } else {
-                String error = "No private Key file was found in WAR...";
-//                log.error(error);
-                throw new IllegalStateException(error);
+        synchronized (lock) { // prevent possible data races
+            if (signer == null) {
+                InputStream fullPath;
+                if (isWebApp) {
+                    fullPath = getInputFileInWebApp();
+                } else {
+                    fullPath = readFileInProgram();
+                }
+                log.debug("Loading private key for the first time...");
+//                System.out.println("Loading private key for the first time...");
+                Optional<PrivateKey> privateKeyOptional = loadPrivateKey(fullPath);
+                if (privateKeyOptional.isPresent()) {
+                    signer = new RSASSASigner(privateKeyOptional.get());
+                } else {
+                    String error = "No private Key file was found in WAR...";
+                    log.error(error);
+                    throw new IllegalStateException(error);
+                }
             }
         }
         // compose JWT from parts

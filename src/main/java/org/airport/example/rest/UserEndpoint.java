@@ -97,6 +97,7 @@ public class UserEndpoint {
         Principal principal = securityContext.getUserPrincipal();
         String principalEmail = principal == null ? "anonymous" : principal.getName();
         // method is NOT IMPLEMENTED due to lack of clear requirements
+        log.debug("Logout : {}", principalEmail);
 
         // One of custom scenarios can be following:
         // - take current date-time and update user's record on logout
@@ -105,6 +106,6 @@ public class UserEndpoint {
         // - compare 'token exp' value with 'logout_date_time' value
         // - if 'token exp' < 'logout_date_time' - FORBID access to method
 
-        return Response.ok(principalEmail).build();
+        return Response.status(Response.Status.OK.getStatusCode()).entity(principalEmail).build();
     }
 }

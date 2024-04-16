@@ -31,6 +31,7 @@ public class UserEntity implements Serializable {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @Column(nullable = false)
     private String password;
@@ -38,6 +39,7 @@ public class UserEntity implements Serializable {
     @Column(name = "CREATED", nullable = false, updatable = false, insertable = false)
     private Date created;
 
+    @ToString.Exclude
     @OneToMany(fetch = FetchType.LAZY)
     private Set<AirPortEntity> owners;
 }

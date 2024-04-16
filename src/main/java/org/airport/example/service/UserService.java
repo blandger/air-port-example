@@ -41,8 +41,10 @@ public class UserService {
     public UserModel register(UserModel model) throws UserRegistrationException {
         Objects.requireNonNull(model, "user model is NULL");
         var entity = userMapper.toEntity(model);
-//        log.debug("Prepared Registration entity: {}", entity);
-        System.out.println("Prepared Registration entity = " + entity);
+        String hashedPassword = passwordService.hashPassword(model.getPassword().toCharArray());
+        entity.setPassword(hashedPassword);
+        log.debug("Prepared Registration entity: {}", entity);
+//        System.out.println("Prepared Registration entity = " + entity);
         try {
             userRepository.createUser(entity);
             log.debug("Registered: {}", entity);
@@ -62,8 +64,8 @@ public class UserService {
      * @throws UserLoginException if something goes wrong
      */
     public String login(UserModel model) throws UserLoginException {
-//        log.debug("Do login: {}", model);
-        System.out.println("Do login: " + model);
+        log.debug("Do login: {}", model);
+//        System.out.println("Do login: " + model);
         Objects.requireNonNull(model, "user model is NULL");
         Objects.requireNonNull(model.getEmail(), "user email is NULL");
         Objects.requireNonNull(model.getPassword(), "user password is NULL");
@@ -74,8 +76,9 @@ public class UserService {
             throw new UserLoginException("User is not known");
         }
         // verify password
-        var hashedPassword = passwordService.hashPassword(model.getPassword().toCharArray());
-        if (!passwordService.isCorrectPassword(foundUser.getPassword(), hashedPassword)) {
+        var hashedPassword = foundUser.getPassword();
+//        log.debug("Verify pass, = \n{}\n{}", hashedPassword, foundUser.getPassword());
+        if (!passwordService.isCorrectPassword(model.getPassword(), hashedPassword)) {
             log.warn("User '{}', password verification has failed", model.getEmail());
             throw new UserLoginException("User's is not authorized, incorrect password");
         }

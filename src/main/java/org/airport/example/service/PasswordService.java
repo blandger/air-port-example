@@ -18,21 +18,23 @@ public class PasswordService {
     }
 
     public boolean isCorrectPassword(String receivedHashedPassword, String originalHash) {
-        return BCrypt.verifyer().verify(receivedHashedPassword.toCharArray(), originalHash).verified;
+        BCrypt.Result verify = BCrypt.verifyer().verify(receivedHashedPassword.toCharArray(), originalHash);
+        return verify.verified;
     }
 
     public static void main(String[] args) {
-        String password = "Dfks$5d*Q";
-//        String password = "guestPwd1!";
-        String bcryptHashString = BCrypt.withDefaults().hashToString(HASH_COMPLEXITY, password.toCharArray());
-        System.out.println("bcryptHashString = " + bcryptHashString);
-        // $2a$12$AA0z0LFi7sF.M065NxV3ZuREtjLPZE7elrOrbjn0DZlPl3v7zwIFq
-        BCrypt.Result result = BCrypt.verifyer().verify(password.toCharArray(), bcryptHashString);
-        System.out.println("result = " + result.verified);
+        PasswordService passwordService = new PasswordService();
 
-        String hashed = "$2a$12$AA0z0LFi7sF.M065NxV3ZuREtjLPZE7elrOrbjn0DZlPl3v7zwIFq";
-        BCrypt.Result result2 = BCrypt.verifyer().verify(password.toCharArray(), hashed);
-        System.out.println("result = " + result2.verified);
+        String password = "Dfks$5d*Q";
+        String bcryptHashString = passwordService.hashPassword(password.toCharArray());
+        System.out.println("bcryptHashString = " + bcryptHashString);
+        boolean result = passwordService.isCorrectPassword(password, bcryptHashString);
+        System.out.println("result = " + result);
+
+        String storedHashedPassword = "$2a$12$AA0z0LFi7sF.M065NxV3ZuREtjLPZE7elrOrbjn0DZlPl3v7zwIFq";
+        boolean result2 = passwordService.isCorrectPassword(password, storedHashedPassword);
+        System.out.println("result2 = " + result2);
     }
+
 
 }

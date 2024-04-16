@@ -77,6 +77,7 @@ public class AirPortEndpoint {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("AirPort creation error: " + e.getMessage()).build();
         }
+        log.debug("Created = {}", newModel);
         return Response.status(Response.Status.CREATED.getStatusCode()).entity(newModel).build();
     }
 
@@ -119,6 +120,7 @@ public class AirPortEndpoint {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("AirPort updating error: " + e.getMessage()).build();
         }
+        log.debug("Updated = {}", newModel);
         return Response.status(Response.Status.ACCEPTED.getStatusCode()).entity(newModel).build();
     }
 
@@ -146,6 +148,7 @@ public class AirPortEndpoint {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(deleteResponse).build();
         }
+        log.debug("Deleted airport: '{}'", deleteResponse);
         return Response.status(Response.Status.ACCEPTED.getStatusCode()).entity(deleteResponse).build();
     }
 

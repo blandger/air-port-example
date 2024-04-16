@@ -1,4 +1,6 @@
 
+SET SEARCH_PATH TO air_port_schema;
+
 INSERT INTO USERS (id, username, email, password) VALUES
 (1, 'admin', 'admin@gmail.com', /*'Dfks$5d*Q'*/ '$2a$12$AA0z0LFi7sF.M065NxV3ZuREtjLPZE7elrOrbjn0DZlPl3v7zwIFq'),
 (2, 'guest', 'guest@gmail.com', /*'guestPwd1!'*/ '$2a$12$e6Ol9M.4Pr5Ncu9/u/CP9.YF.Kv0n3/jKDQ0UG4FTVRGBuJ752bgq')
