@@ -104,7 +104,7 @@
                 <level name="WARN"/>
             </logger>
             <root-logger>
-                <level name="INFO"/>
+                <level name="DEBUG"/>
                 <handlers>
                     <handler name="CONSOLE"/>
                     <handler name="FILE"/>
@@ -530,15 +530,4 @@
             <remote-destination host="${jboss.mail.server.host:localhost}" port="${jboss.mail.server.port:25}"/>
         </outbound-socket-binding>
     </socket-binding-group>
-    <deployments>
-        <deployment name="microprofile-jwt.war" runtime-name="microprofile-jwt.war">
-            <content sha1="4253efbdb38c7507ad60815dd3450070da204936"/>
-        </deployment>
-        <deployment name="ROOT.war" runtime-name="ROOT.war">
-            <content sha1="520b7b5dbdf861115c699940120654cb520db435"/>
-        </deployment>
-        <deployment name="airport-example.war" runtime-name="airport-example.war">
-            <content sha1="8ac9023616a6f6809f1c348a07960db47c73fcff"/>
-        </deployment>
-    </deployments>
 </server>

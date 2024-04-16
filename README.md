@@ -48,8 +48,10 @@ postgres-1  | 2024-04-04 10:18:24.545 UTC [61] LOG:  database system was shut do
 postgres-1  | 2024-04-04 10:18:24.554 UTC [1] LOG:  database system is ready to accept connections
 ```
 
-### Install PostgreSQL CLI client and create database
-Check how to install PSQL client CLI by [link](https://www.dewanahmed.com/install-psql/)
+### Install PostgreSQL CLI client and create database (IMPORTANT !)
+Linux: Check how to install PSQL CLI client only by [link](https://www.dewanahmed.com/install-psql/)
+
+Windows: Download 16.2 installation package, install PSQL CLI client only by [link](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads)
 
 Check after installation
 
@@ -96,10 +98,10 @@ Exit SQL client by:
 ## WildFly application server
 
 ### Download and unpack WildFly application server
-Download ZIP/TGZ version **31.0.0.Final** from [the download page](https://www.wildfly.org/downloads/)
+Download ZIP/TGZ **31.0.0.Final** version ONLY from [the download page](https://www.wildfly.org/downloads/)
 or by direct link:
 
-[https://github.com/wildfly/wildfly/releases/download/31.0.1.Final/wildfly-31.0.1.Final.zip](https://github.com/wildfly/wildfly/releases/download/31.0.1.Final/wildfly-31.0.1.Final.zip)
+[https://github.com/wildfly/wildfly/releases/download/31.0.0.Final/wildfly-31.0.0.Final.zip](https://github.com/wildfly/wildfly/releases/download/31.0.0.Final/wildfly-31.0.0.Final.zip)
 
 unpack it into local folder like : /wildfly-31.0.0.Final/
 
@@ -139,23 +141,37 @@ type and run next command inside CLI to connect to running WildFly:
 
 See no errors on connect.
 
-### 3. Run command to install driver JAR file like:
+### 3. Run command to install new module/driver JAR file like:
 
 Specify correct local path to postgresql-42.7.3.jar file from project:
 /air-port-example/lib/postgresql-42.7.3.jar
 
 > [standalone@localhost:9990 /] module add --name=org.postgres --resources=path_to/air-port-example/lib/postgresql-42.7.3.jar --dependencies=javax.api,javax.transaction.api
 
-See no errors in CLI
+If you put 'postgresql-42.7.3.jar' inside /wildfly-31.0.0.Final/bin 
+
+> [standalone@localhost:9990 /] module add --name=org.postgres --resources=postgresql-42.7.3.jar --dependencies=javax.api,javax.transaction.api
+
+Check and see no errors in CLI
+
+Type to quit:
+> [standalone@localhost:9990 /] quit
+
+### 4. Restart (stop and start again) WildFly server
+
+> wildfly-31.0.0.Final/bin/standalone.sh
+
+Watch there are no errors during start up after adding new module
+
 
 ### Replace XML config file in WildFly app server (31.0.0.Final)
-**_IMPORTANT! Backup original WildFly config file in folder :_**
+**_IMPORTANT! Backup (rename) original WildFly config file in folder :_**
 /wildfly-31.0.0.Final/standalone/configuration/standalone.xml
 
 Take updated config with additional PostgreSQL datasource from project folder :
 /air-port-example/wildfly_config/standalone.xml
 
-put it into wildfly install folder, then check again running by command:
+put it into wildfly install folder (standalone/configuration/standalone.xml), then check again running by command:
 
 > /wildfly-31.0.0.Final/bin/standalone.sh
 
@@ -167,6 +183,10 @@ See output about bound **airPortExampleDS** data source:
 16:24:29,281 INFO  [org.jboss.as.connector.subsystems.datasources] (MSC service thread 1-8) WFLYJCA0001: Bound data source [java:jboss/datasources/airPortExampleDS]
 ```
 
+Check there is no errors like:
+```
+Caused by: org.postgresql.util.PSQLException: FATAL: database "air_port_example" does not exist
+```
 
 ## Install MAVEN build tool and check
 Use any suitable approach to install Maven. Version 3.6.4 was used. Then check it using command below
@@ -200,8 +220,15 @@ then run sources build and deploy command
 
 > mvn clean package wildfly:deploy
 
-IF you see error like below, then you probably didn't run WildFly instance properly
+Correct WAR app deployment logs without errors looks like below: 
+```
+15:04:05,077 INFO  [org.wildfly.security.soteria.original.SamRegistrationInstaller] (ServerService Thread Pool -- 83) Initializing Soteria 3.0.3.Final for context '/airport-example'
+15:04:05,428 INFO  [org.jboss.resteasy.resteasy_jaxrs.i18n] (ServerService Thread Pool -- 83) RESTEASY002225: Deploying jakarta.ws.rs.core.Application: class org.airport.example.AirPortApplication
+15:04:05,732 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 83) WFLYUT0021: Registered web context: '/airport-example' for server 'default-server'
+15:04:05,784 INFO  [org.jboss.as.server] (management-handler-thread - 2) WFLYSRV0010: Deployed "airport-example.war" (runtime-name : "airport-example.war")
+```
 
+IF you see error like below, then you probably didn't run/start WildFly instance properly
 ```
 [ERROR] Failed to execute goal org.wildfly.plugins:wildfly-maven-plugin:4.2.1.Final:deploy (default-cli) 
 on project airport-example: Failed to execute goal deploy.: 
