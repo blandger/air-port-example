@@ -84,7 +84,7 @@ public class TokenService {
      * @return create stream
      * @throws FileNotFoundException no file by path
      */
-    private InputStream readFileInProgram() throws FileNotFoundException {
+    private InputStream getInputStreamByProgram() throws FileNotFoundException {
         Path curr = Paths.get(".").toAbsolutePath().normalize();
         System.out.println("App private key currPath = " + curr);
         // local path for  check in 'main'
@@ -95,32 +95,13 @@ public class TokenService {
     private InputStream getInputFileInWebApp() {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader(); // deployment.airport-example.war
         InputStream inputStream = classLoader.getResourceAsStream(WAR_FILE_DIR_PRIVATE_KEY);
-//        log.debug("'{}' = {}", WAR_FILE_DIR_PRIVATE_KEY, inputStream);
-        System.out.println("? = " + WAR_FILE_DIR_PRIVATE_KEY + ", " + inputStream);
+        log.debug("'{}' = {}", WAR_FILE_DIR_PRIVATE_KEY, inputStream);
+//        System.out.println("? = " + WAR_FILE_DIR_PRIVATE_KEY + ", " + inputStream);
         return inputStream;
     }
 
     public String generateJWT(boolean isWebApp, final String principal, final String... groups) throws Exception {
-        synchronized (lock) { // prevent possible data races
-            if (signer == null) {
-                InputStream fullPath;
-                if (isWebApp) {
-                    fullPath = getInputFileInWebApp();
-                } else {
-                    fullPath = readFileInProgram();
-                }
-                log.debug("Loading private key for the first time...");
-//                System.out.println("Loading private key for the first time...");
-                Optional<PrivateKey> privateKeyOptional = loadPrivateKey(fullPath);
-                if (privateKeyOptional.isPresent()) {
-                    signer = new RSASSASigner(privateKeyOptional.get());
-                } else {
-                    String error = "No private Key file was found in WAR...";
-                    log.error(error);
-                    throw new IllegalStateException(error);
-                }
-            }
-        }
+        createJwtSignerInstance(isWebApp);
         // compose JWT from parts
         JsonArrayBuilder groupsBuilder = Json.createArrayBuilder();
         for (String group : groups) {
@@ -149,6 +130,39 @@ public class TokenService {
         jwsObject.sign(signer);
 
         return jwsObject.serialize();
+    }
+
+    /**
+     * More safe Multi thread JWT signer instance creation.
+     * @param isWebApp true if called within WebApp, false otherwise
+     * @throws Exception file not found or another io error
+     */
+    public void createJwtSignerInstance(boolean isWebApp) throws Exception {
+        if (signer == null) {
+            synchronized(TokenService.class) {
+                JWSSigner localInstance = signer;
+                if (localInstance == null) {
+                    synchronized(TokenService.class) {
+                        InputStream fullPath;
+                        if (isWebApp) {
+                            fullPath = getInputFileInWebApp();
+                        } else {
+                            fullPath = getInputStreamByProgram();
+                        }
+                        log.debug("Loading private key for the first time...");
+//                      System.out.println("Loading private key for the first time...");
+                        Optional<PrivateKey> privateKeyOptional = loadPrivateKey(fullPath);
+                        if (privateKeyOptional.isPresent()) {
+                            signer = new RSASSASigner(privateKeyOptional.get());
+                        } else {
+                            String error = "No private Key file was found in WAR...";
+                            log.error(error);
+                            throw new IllegalStateException(error);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public static void main(String[] args) throws Exception {
