@@ -16,6 +16,11 @@ public interface AirPortEntityModelMapper {
     @Mapping(target = "created_by", source = "entity.user.username")
     AirPortModel toModel(AirPortEntity entity);
 
+    /**
+     * Utility method is used internally by that convertor
+     * @param value air port entity
+     * @return true if internal value + field are not empty, false otherwise
+     */
     @Condition
     default boolean isUserNotEmpty(UserEntity value) {
         return value != null && !value.getUsername().isEmpty();

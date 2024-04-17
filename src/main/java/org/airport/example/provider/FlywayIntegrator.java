@@ -23,6 +23,13 @@ import java.sql.SQLException;
 @Slf4j
 public class FlywayIntegrator implements Integrator {
 
+    /**
+     * Method is called by server container on start up
+     * @param metadata internal data, not used
+     * @param sessionFactory factory instance, not used
+     * @param serviceRegistry service instantiated by container from registered file
+     *  /src/main/resources/META-INF/services/org.hibernate.integrator.spi.Integrator
+     */
     @Override
     public void integrate(Metadata metadata, SessionFactoryImplementor sessionFactory,
                           SessionFactoryServiceRegistry serviceRegistry) {
@@ -38,7 +45,7 @@ public class FlywayIntegrator implements Integrator {
         } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | SQLException e) {
             log.error("FlyWay, getting Datasource Error", e);
         }
-        log.debug("FlyWay dataSource, {}", dataSource);
+        log.debug("FlyWay dataSource is ready, {}", dataSource);
 
         Flyway flyway =
                 Flyway.configure()

@@ -14,7 +14,6 @@ import java.util.Set;
  * Entity for 'users' table
  */
 @Entity
-//@Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "id"))
 @Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = "id"), @UniqueConstraint(columnNames = "email")})
 @Getter
 @Setter
@@ -39,7 +38,7 @@ public class UserEntity implements Serializable {
     @Column(name = "CREATED", nullable = false, updatable = false, insertable = false)
     private Date created;
 
-    @ToString.Exclude
+    @ToString.Exclude @EqualsAndHashCode.Exclude
     @OneToMany(fetch = FetchType.LAZY)
     private Set<AirPortEntity> owners;
 }

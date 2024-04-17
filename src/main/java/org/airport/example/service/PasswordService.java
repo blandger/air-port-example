@@ -13,15 +13,29 @@ public class PasswordService {
     // Define the BCrypt workload to use when generating password hashes. 10-31 is a valid value.
     private static final int HASH_COMPLEXITY = 12;
 
+    /**
+     * Hash supplied password
+     * @param password to be hashed
+     * @return hashed string
+     */
     public String hashPassword(char[] password) {
         return BCrypt.withDefaults().hashToString(HASH_COMPLEXITY, password);
     }
 
-    public boolean isCorrectPassword(String receivedHashedPassword, String originalHash) {
-        BCrypt.Result verify = BCrypt.verifyer().verify(receivedHashedPassword.toCharArray(), originalHash);
+    /**
+     * Check if suppieled password is equal to previously stored hashed version
+     * @param receivedPassword to be checked
+     * @param originalHash hash from database
+     * @return trie if correct, false otherwise
+     */
+    public boolean isCorrectPassword(String receivedPassword, String originalHash) {
+        BCrypt.Result verify = BCrypt.verifyer().verify(receivedPassword.toCharArray(), originalHash);
         return verify.verified;
     }
 
+    /**
+     * For inplace testing purpose
+     */
     public static void main(String[] args) {
         PasswordService passwordService = new PasswordService();
 

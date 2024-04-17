@@ -78,28 +78,6 @@ public class TokenService {
         return Optional.empty();
     }
 
-    /**
-     * Reading private key file by 'main' program
-     *
-     * @return create stream
-     * @throws FileNotFoundException no file by path
-     */
-    private InputStream getInputStreamByProgram() throws FileNotFoundException {
-        Path curr = Paths.get(".").toAbsolutePath().normalize();
-        System.out.println("App private key currPath = " + curr);
-        // local path for  check in 'main'
-        Path fullPath = Path.of(curr.toString(), "src/main/resources/META-INF/private.pem");
-        return new FileInputStream(fullPath.toFile());
-    }
-
-    private InputStream getInputFileInWebApp() {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader(); // deployment.airport-example.war
-        InputStream inputStream = classLoader.getResourceAsStream(WAR_FILE_DIR_PRIVATE_KEY);
-        log.debug("'{}' = {}", WAR_FILE_DIR_PRIVATE_KEY, inputStream);
-//        System.out.println("? = " + WAR_FILE_DIR_PRIVATE_KEY + ", " + inputStream);
-        return inputStream;
-    }
-
     public String generateJWT(boolean isWebApp, final String principal, final String... groups) throws Exception {
         createJwtSignerInstance(isWebApp);
         // compose JWT from parts
@@ -145,7 +123,7 @@ public class TokenService {
                     synchronized(TokenService.class) {
                         InputStream fullPath;
                         if (isWebApp) {
-                            fullPath = getInputFileInWebApp();
+                            fullPath = getInputStreamInWebApp();
                         } else {
                             fullPath = getInputStreamByProgram();
                         }
@@ -163,6 +141,32 @@ public class TokenService {
                 }
             }
         }
+    }
+
+    /**
+     * Create input stream for reading private key file by 'main' program
+     *
+     * @return create stream
+     * @throws FileNotFoundException no file by path
+     */
+    private InputStream getInputStreamByProgram() throws FileNotFoundException {
+        Path curr = Paths.get(".").toAbsolutePath().normalize();
+        log.debug("App private key currPath = {}", curr);
+        // local path for  check in 'main'
+        Path fullPath = Path.of(curr.toString(), "src/main/resources/META-INF/private.pem");
+        return new FileInputStream(fullPath.toFile());
+    }
+
+    /**
+     * Creation stream to read private key inside Web app
+     * @return stream to file
+     */
+    private InputStream getInputStreamInWebApp() {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader(); // deployment.airport-example.war
+        InputStream inputStream = classLoader.getResourceAsStream(WAR_FILE_DIR_PRIVATE_KEY);
+        log.debug("'{}' = {}", WAR_FILE_DIR_PRIVATE_KEY, inputStream);
+//        System.out.println("? = " + WAR_FILE_DIR_PRIVATE_KEY + ", " + inputStream);
+        return inputStream;
     }
 
     public static void main(String[] args) throws Exception {
