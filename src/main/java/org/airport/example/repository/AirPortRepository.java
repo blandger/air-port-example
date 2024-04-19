@@ -42,7 +42,12 @@ public class AirPortRepository {
     @Transactional
     public void update(AirPortEntity airPort) {
         Objects.requireNonNull(airPort, "airPort is NULL");
-        em.merge(airPort);
+        Objects.requireNonNull(airPort.getId(), "airPort ID is NULL");
+        if (em.find(AirPortEntity.class, airPort.getId()) != null) {
+            em.merge(airPort);
+        } else {
+            throw new RuntimeException("AirPort not found by " + airPort.getId());
+        }
     }
 
     /**
@@ -52,7 +57,7 @@ public class AirPortRepository {
      */
     @Transactional
     public int delete(Long airPortId) {
-        Objects.requireNonNull(airPortId, "airport entity ID is NULL");
+        Objects.requireNonNull(airPortId, "airport ID is NULL");
         int deleted = em.createQuery("delete from AirPortEntity where id = :id")
                 .setParameter("id", airPortId)
                 .executeUpdate();

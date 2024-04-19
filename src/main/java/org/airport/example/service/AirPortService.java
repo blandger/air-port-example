@@ -79,7 +79,8 @@ public class AirPortService {
             log.debug("Updated AirPort: {}", airPortEntity);
 //            System.out.println("Updated AirPort: " + airPortEntity);
         } catch (Exception e) {
-            throw new AirPortCreateException("Failed AirPort update", e);
+//            log.error("Updating error", e);
+            throw new AirPortCreateException("Failed AirPort update: " + e);
         }
         return airPortMapper.toModel(airPortEntity);
     }
